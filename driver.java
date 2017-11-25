@@ -13,9 +13,9 @@ public class driver {
     public static void main(String[] args) {
 
         // ===== INITIALIZING ALL THE DATA =====
-        String[] plaintexts  = {"3DB0", "3DB1", "3DB2", "3DB3"};
-        String[] ciphertexts = {"DOA2", "D0A3"};
-        String[] key_strs    = {"4FE83AF9", "CFE83AF9", "4EE83AF9", "CEE83AF9"};
+        String[] plaintexts = {"3DB0", "3DB1", "3DB2", "3DB3"};
+        String[] ciphertexts = {"D0A2", "D0A3"};
+        String[] key_strs = {"4FE83AF9", "CFE83AF9", "4EE83AF9", "CEE83AF9"};
 
 
         // ===== INITIALIZING THE DATA FOR THE SPN =====
@@ -26,7 +26,7 @@ public class driver {
         // initialize the Sbox
         Sbox sb = new Sbox(l);
 
-        int[] sbinit = { 0x0E, 0x04, 0x0D, 0x01, 0x02, 0x0F, 0x0B, 0x08,
+        int[] sbinit = {0x0E, 0x04, 0x0D, 0x01, 0x02, 0x0F, 0x0B, 0x08,
                 0x03, 0x0A, 0x06, 0x0C, 0x05, 0x09, 0x00, 0x07
         };
 
@@ -42,59 +42,70 @@ public class driver {
         KeyScheduler ks = new KeyScheduler(binKey);
         Key[] subkeys = new Key[5];
         for (int i = 0; i < 5; i++) {
-            subkeys[i] = new Key(ks.getKey(i+1));
+            String curSt = ks.getKey(i + 1);
+            subkeys[i] = new Key(curSt);
         }
+
 
         Round[] rounds = new Round[5];
         for (int i = 0; i < 5; i++) {
             rounds[i] = new Round(subkeys[i], sb, pm, l);
         }
 
+        rounds[3].setRoundType(1);
+        rounds[4].setRoundType(2);
+
         spn.setRounds(rounds);
 
         ArrayList<String> encryptedList = new ArrayList<>();
-        for (String pt: plaintexts) {
+        for (String pt : plaintexts) {
             String binStr = BinUtil.hexToBinStr(pt);
             String encStr = spn.encrypt(binStr);
             encryptedList.add(encStr);
         }
 
 
-        String fst_a = encryptedList.get(0);
-        String fst_b = encryptedList.get(1);
-        String snd_a = encryptedList.get(2);
-        String snd_b = encryptedList.get(3);
+        String el1 = encryptedList.get(0);
+        String el2 = encryptedList.get(1);
+        String el3 = encryptedList.get(2);
+        String el4 = encryptedList.get(3);
 
-        ArrayList<Integer> positions_fst = BinUtil.differingBits(fst_a,fst_b,
-                16);
-        ArrayList<Integer> positions_snd = BinUtil.differingBits(snd_a,snd_b,
-                16);
+        ArrayList<Integer> p1 = BinUtil.differingBits(el1, el2, 16);
+        ArrayList<Integer> p2 = BinUtil.differingBits(el3, el4, 16);
+        ArrayList<Integer> p3 = BinUtil.differingBits(el1, el3, 16);
+        ArrayList<Integer> p4 = BinUtil.differingBits(el2, el4, 16);
 
         System.out.println("===== 2a =====");
-        System.out.println(positions_fst);
-        System.out.println(positions_snd);
+        System.out.println(p1);
+        System.out.println(p2);
+        System.out.println(p3);
+        System.out.println(p4);
 
         // ===== 2b =====
 
         System.out.println("===== 2b =====");
-        for (String enc: encryptedList) {
-            String decrypted = spn.decrypt(enc);
-            ArrayList<Integer> positions = BinUtil.differingBits(enc,
+
+
+        for (String enc : ciphertexts) {
+            String curBin = BinUtil.hexToBinStr(enc);
+            String decrypted = spn.decrypt(curBin);
+            ArrayList<Integer> positions = BinUtil.differingBits(curBin,
                     decrypted, 16);
             System.out.println(positions);
         }
+
 
         // ===== 2c =====
         String plaintext = BinUtil.hexToBinStr(plaintexts[0]);
 
         encryptedList = new ArrayList<>();
-        
+
         for (int i = 0; i < 4; i++) {
             binKey = BinUtil.hexToBinStr(key_strs[i]);
             ks = new KeyScheduler(binKey);
             subkeys = new Key[5];
             for (int j = 0; j < 5; j++) {
-                subkeys[j] = new Key(ks.getKey(j+1));
+                subkeys[j] = new Key(ks.getKey(j + 1));
             }
 
             rounds = new Round[5];
@@ -108,19 +119,21 @@ public class driver {
             encryptedList.add(encrypted);
         }
 
-        fst_a = encryptedList.get(0);
-        fst_b = encryptedList.get(2);
-        snd_a = encryptedList.get(1);
-        snd_b = encryptedList.get(3);
+        el1 = encryptedList.get(0);
+        el2 = encryptedList.get(1);
+        el3 = encryptedList.get(2);
+        el4 = encryptedList.get(3);
 
-        positions_fst = BinUtil.differingBits(fst_a,fst_b,
-                16);
-        positions_snd = BinUtil.differingBits(snd_a,snd_b,
-                16);
+        p1 = BinUtil.differingBits(el1, el2, 16);
+        p2 = BinUtil.differingBits(el3, el4, 16);
+        p3 = BinUtil.differingBits(el1, el3, 16);
+        p4 = BinUtil.differingBits(el2, el4, 16);
 
         System.out.println("===== 2c =====");
-        System.out.println(positions_fst);
-        System.out.println(positions_snd);
+        System.out.println(p1);
+        System.out.println(p2);
+        System.out.println(p3);
+        System.out.println(p4);
 
         // ===== 3b =====
         System.out.println("===== 3b =====");
@@ -141,7 +154,7 @@ public class driver {
         partFourSbox.init(p4init);
 
         // ===== 4a =====
-        int [][] NL_values = new int[16][16];
+        int[][] NL_values = new int[16][16];
 
         int y;
         int cursum = 0;
@@ -150,7 +163,7 @@ public class driver {
                 cursum = 0;
                 for (int x = 0; x < 16; x++) {
                     y = partFourSbox.substitute(x);
-                    int curVal = BinUtil.xorAllBits(a, x, 4)^
+                    int curVal = BinUtil.xorAllBits(a, x, 4) ^
                             BinUtil.xorAllBits(b, y, 4);
                     if (curVal == 0) {
                         cursum++;
@@ -177,13 +190,15 @@ public class driver {
         // doing this for the first key
         subkeys = new Key[5];
         for (int i = 0; i < 5; i++) {
-            subkeys[i] = new Key(firstKS.getKey(i+1));
+            subkeys[i] = new Key(firstKS.getKey(i + 1));
         }
 
         rounds = new Round[5];
         for (int i = 0; i < 5; i++) {
             rounds[i] = new Round(subkeys[i], partFourSbox, pm, l);
         }
+        rounds[3].setRoundType(1);
+        rounds[4].setRoundType(2);
 
         spn.setRounds(rounds);
 
@@ -205,13 +220,16 @@ public class driver {
         // doing this for the second key
         subkeys = new Key[5];
         for (int i = 0; i < 5; i++) {
-            subkeys[i] = new Key(secondKS.getKey(i+1));
+            subkeys[i] = new Key(secondKS.getKey(i + 1));
         }
 
         rounds = new Round[5];
         for (int i = 0; i < 5; i++) {
             rounds[i] = new Round(subkeys[i], partFourSbox, pm, l);
         }
+
+        rounds[3].setRoundType(1);
+        rounds[4].setRoundType(2);
 
         spn.setRounds(rounds);
 
@@ -230,6 +248,7 @@ public class driver {
         System.out.printf("[key: %s] number of plaintexts where T = " +
                 "0: %d\n", secondKey, zeroCount);
 
+        // ===== EC =====
 
     }
 }

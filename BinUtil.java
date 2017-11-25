@@ -16,7 +16,7 @@ public class BinUtil {
         return res;
     }
 
-    private static String leftPad(String s, int l, char c) {
+    public static String leftPad(String s, int l, char c) {
         if (s.length() > l) {
             return s;
         }

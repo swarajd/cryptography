@@ -61,6 +61,8 @@ public class Round {
         this.pm = p;
     }
 
+    public void setRoundType(int rt) { this.roundType = rt; }
+
     public String encrypt(String p) {
         if (displayState) System.out.printf("K: %s\n", this.k.toString());
         this.u = SPNUtil.ArrToString(this.k.xor(p));
