@@ -12,6 +12,7 @@ public class Round {
     private int l;
 
     private Key k;
+    private String w;
     private String u;
     private Sbox sb;
     private Permutation pm;
@@ -24,6 +25,8 @@ public class Round {
     public String getU() {
         return u;
     }
+
+    public String getW() { return w; }
 
 
     public Round(Key key, Sbox s, Permutation p, int l) {
@@ -64,6 +67,7 @@ public class Round {
     public void setRoundType(int rt) { this.roundType = rt; }
 
     public String encrypt(String p) {
+        this.w = p;
         if (displayState) System.out.printf("K: %s\n", this.k.toString());
         this.u = SPNUtil.ArrToString(this.k.xor(p));
         if (displayState) System.out.printf("u: %s\n", this.u);

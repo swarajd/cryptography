@@ -206,9 +206,9 @@ public class driver {
         for (int i = 0; i < 65536; i++) {
             String curPlaintext = BinUtil.intToBinStr(i, 16);
             String throwaway = spn.encrypt(curPlaintext);
-            int fst = rounds[0].getU().charAt(15) == '1' ? 1 : 0;
-            int snd = rounds[1].getU().charAt(0) == '1' ? 1 : 0;
-            int thr = rounds[1].getU().charAt(8) == '1' ? 1 : 0;
+            int fst = rounds[0].getW().charAt(15) == '1' ? 1 : 0;
+            int snd = rounds[3].getU().charAt(0) == '1' ? 1 : 0;
+            int thr = rounds[3].getU().charAt(8) == '1' ? 1 : 0;
             if ((fst ^ snd ^ thr) == 0) {
                 zeroCount++;
             }
@@ -237,9 +237,9 @@ public class driver {
         for (int i = 0; i < 65536; i++) {
             String curPlaintext = BinUtil.intToBinStr(i, 16);
             String throwaway = spn.encrypt(curPlaintext);
-            int fst = rounds[0].getU().charAt(15) == '1' ? 1 : 0;
-            int snd = rounds[4].getU().charAt(0) == '1' ? 1 : 0;
-            int thr = rounds[4].getU().charAt(8) == '1' ? 1 : 0;
+            int fst = rounds[0].getW().charAt(15) == '1' ? 1 : 0;
+            int snd = rounds[3].getU().charAt(0) == '1' ? 1 : 0;
+            int thr = rounds[3].getU().charAt(8) == '1' ? 1 : 0;
             if ((fst ^ snd ^ thr) == 0) {
                 zeroCount++;
             }
